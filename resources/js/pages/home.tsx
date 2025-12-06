@@ -1,15 +1,14 @@
 'use client';
-import { Link } from '@inertiajs/react';
 import { ArrowUpRight } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="bg-dark-primary overflow-x-hidden text-white">
-      <div className="pointer-events-none absolute -top-1/6 -right-1/6 z-0 w-[40em] overflow-hidden md:w-[60vw] md:min-w-[40em]">
+    <div>
+      <div className="pointer-events-none absolute transition-all duration-300 ease-in -top-1/6 -right-1/6 z-0 w-[40em] md:w-[55em]">
         <img
           src="vinyl.png"
           alt="Vinyl Record"
-          className="h-auto w-full animate-[spin_20s_linear_infinite] object-cover opacity-50 transition-opacity duration-300 md:opacity-100"
+          className="h-auto w-full object-cover opacity-50 md:opacity-100"
         />
       </div>
       <div className="relative z-10 container mx-auto flex h-screen items-center px-6 md:px-12">
@@ -32,20 +31,15 @@ export default function Home() {
           </p>
 
           {/* Call to Action Button */}
-          <Link href="/login">
-            <button className="group flex items-center rounded-full bg-white py-3 pr-3 pl-8 text-black shadow-lg transition-all duration-300 hover:scale-105">
-              <span className="mr-6 text-lg font-bold tracking-wide">
-                Login to view catalog
-              </span>
-              {/* Arrow Icon Circle */}
-              <div className="rounded-full bg-black p-3 transition-transform duration-300 group-hover:rotate-45">
-                <ArrowUpRight
-                  className="h-6 w-6 text-white"
-                  strokeWidth={2.5}
-                />
-              </div>
-            </button>
-          </Link>
+          <button className="group flex items-center rounded-full bg-white py-3 pr-3 pl-8 text-black shadow-lg transition-all duration-300 hover:scale-105">
+            <span className="mr-6 text-lg font-bold tracking-wide">
+              select in the catalog
+            </span>
+            {/* Arrow Icon Circle */}
+            <div className="rounded-full bg-black p-3 transition-transform duration-300 group-hover:rotate-45">
+              <ArrowUpRight className="h-6 w-6 text-white" strokeWidth={2.5} />
+            </div>
+          </button>
         </div>
       </div>
     </div>
