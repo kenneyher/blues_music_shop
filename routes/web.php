@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Enums\UserRole;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\InventoryController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -27,14 +28,19 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     })->name('home');
 });
 
-// Group for Admins only
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    
-    Route::get('/admin/dashboard', function () {
-        return Inertia::render('admin/dashboard');
-    })->name('admin.dashboard');
-});
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->group(function () {
 
+        Route::get('/inventory', 
+            [InventoryController::class, 'index']
+        )->name('admin.inventory');
+    
+        Route::get('/dashboard', function () {
+            return Inertia::render('admin/dashboard');
+        })->name('admin.dashboard');
+    }
+);
 //  Group for Customers only
 // Route::middleware(['auth', 'role:customer'])->group(function () {
 //     Route::get('/my-orders', [OrderController::class, 'index']);
