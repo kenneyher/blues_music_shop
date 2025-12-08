@@ -19,7 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import DashboardLayout from '@/layouts/dashboard-layout';
-import { router } from '@inertiajs/react';
+import { router, Link } from '@inertiajs/react';
 import { Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDebounce } from 'use-debounce';
@@ -117,10 +117,12 @@ export default function Inventory({ products, filters }: PageProps) {
                   </Button>
                 ))}
               </div>
-              <Button className="gap-2 bg-accent text-accent-foreground hover:bg-accent/75">
+              <Link href={'/admin/inventory/create'}>
+                <Button className="gap-2 bg-accent text-accent-foreground hover:bg-accent/75">
                 <Plus className="h-4 w-4" />
                 Add Item
               </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -140,10 +142,10 @@ export default function Inventory({ products, filters }: PageProps) {
                       Title
                     </TableHead>
                     <TableHead className="text-muted-foreground">
-                      Format
+                      Artist
                     </TableHead>
                     <TableHead className="text-muted-foreground">
-                      Artist
+                      Format
                     </TableHead>
                     <TableHead className="text-muted-foreground">
                       Price

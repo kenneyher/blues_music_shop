@@ -35,7 +35,7 @@ class AuthController extends Controller
                 return redirect()->intended('admin/dashboard');
             }
 
-            return redirect()->intended('dashboard');
+            return redirect()->intended('home');
         }
 
         // If auth fails, throw a validation error back to the form

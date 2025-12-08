@@ -35,6 +35,12 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/inventory', 
             [InventoryController::class, 'index']
         )->name('admin.inventory');
+
+        Route::get('/inventory/create', 
+            [InventoryController::class, 'create']
+        )->name('admin.inventory.create');
+
+        Route::post('/inventory', [InventoryController::class, 'store'])->name('admin.inventory.store');
     
         Route::get('/dashboard', function () {
             return Inertia::render('admin/dashboard');
