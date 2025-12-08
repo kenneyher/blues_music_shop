@@ -4,7 +4,7 @@
     "singleAttributePerLine": false,
     "htmlWhitespaceSensitivity": "css",
     "printWidth": 80,
-    "plugins": ["prettier-plugin-organize-imports", "prettier-plugin-tailwindcss", "@prettier/plugin-php"],
+    "plugins": ["prettier-plugin-organize-imports", "prettier-plugin-tailwindcss"],
     "tailwindFunctions": ["clsx", "cn"],
     "tailwindStylesheet": "resources/css/app.css",
     "tabWidth": 2,
@@ -15,6 +15,5 @@
                 "tabWidth": 2
             }
         }
-    ],
-  "parser": "php"
+    ]
 }

@@ -44,6 +44,7 @@ export default function CreateProduct({ genres, artists, albums }: PageProps) {
     quantity: '',
     sku: '',
     image: null as File | null,
+    description: '',
   });
 
   console.log(albums)
@@ -269,6 +270,16 @@ export default function CreateProduct({ genres, artists, albums }: PageProps) {
                             <Label>Product specific image (Optional)</Label>
                             <Input type="file" onChange={e => setData('image', e.target.files?.[0] || null)} />
                         </div>
+                    </div>
+                    <div className="space-y-2 col-span-1 md:col-span-3"> {/* Use col-span to make it full width */}
+                        <Label>Description</Label>
+                        <Textarea 
+                            placeholder="Describe the condition, tracklist, or other details..."
+                            className="min-h-[100px]"
+                            value={data.description}
+                            onChange={e => setData('description', e.target.value)}
+                        />
+                        {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
                     </div>
                 </CardContent>
             </Card>

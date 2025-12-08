@@ -20,9 +20,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::middleware(['auth', 'role:user'])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
+});
 
+Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/home', function () {
         return Inertia::render('home');
     })->name('home');
@@ -45,6 +47,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/dashboard', function () {
             return Inertia::render('admin/dashboard');
         })->name('admin.dashboard');
+
+    
+    // NEW ROUTES
+        Route::get('/inventory/{id}/edit', [InventoryController::class, 'edit'])->name('admin.inventory.edit');
+        Route::put('/inventory/{id}', [InventoryController::class, 'update'])->name('admin.inventory.update');
     }
 );
 //  Group for Customers only

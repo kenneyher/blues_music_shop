@@ -161,6 +161,7 @@ export default function Inventory({ products, filters }: PageProps) {
                       <TableRow
                         key={item.id}
                         className="border-b border-border hover:bg-muted/50"
+                        onClick={() => router.visit(`/admin/inventory/${item.id}/edit`)}
                       >
                         <TableCell className="font-medium text-foreground">
                           {item.album.title}
