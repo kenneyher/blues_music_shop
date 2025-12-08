@@ -9,7 +9,7 @@ class Artist extends Model
     protected $fillable = [
         'name',
         'bio',
-    ];
+        'img_path',];
 
     public function albums()
     {

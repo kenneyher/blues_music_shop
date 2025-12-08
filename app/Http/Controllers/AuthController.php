@@ -18,7 +18,8 @@ class AuthController extends Controller
         return Inertia::render('auth/login');
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         // Handle login logic here
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -43,7 +44,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function destroy(Request $request) {
+    public function destroy(Request $request)
+    {
         Auth::logout();
 
         $request->session()->invalidate();

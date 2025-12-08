@@ -16,10 +16,12 @@ class Album extends Model
     {
         return $this->belongsTo(Artist::class);
     }
+
     public function products()
     {
         return $this->hasMany(Product::class);
     }
+
     public function genres()
     {
         return $this->belongsToMany(Genre::class, 'album_genre');
