@@ -31,11 +31,14 @@ class AuthController extends Controller
 
             $user = $request->user();
 
-            if ($user->role === UserRole::ADMIN) {
-                return redirect()->intended('admin/dashboard');
+            $isAdmin = $user->role === UserRole::ADMIN || $user->role === UserRole::ADMIN->value;
+
+            if ($isAdmin) {
+                // 2. FIX: Use redirect('path') instead of intended() to FORCE the dashboard
+                return redirect('admin/dashboard');
             }
 
-            return redirect()->intended('home');
+            return redirect()->intended('/home');
         }
 
         // If auth fails, throw a validation error back to the form
@@ -51,7 +54,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/welcome');
     }
 
     public function createRegistration()

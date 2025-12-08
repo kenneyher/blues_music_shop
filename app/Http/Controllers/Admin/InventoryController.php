@@ -15,28 +15,23 @@ class InventoryController extends Controller
 {
     public function index(Request $request)
     {
-        // ... (Same as before)
-        $query = Product::with(['album.artist', 'album.genres']);
+        $query = Product::query()->with('album.artist');
 
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->whereHas('album', function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhereHas('artist', function ($aq) use ($search) {
-                        $aq->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('genres', function ($gq) use ($search) {
-                        $gq->where('name', 'like', "%{$search}%");
-                    });
-            })->orWhere('sku', 'like', "%{$search}%");
+        if ($request->search) {
+            $query->whereHas('album', function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%');
+            });
         }
 
-        if ($request->filled('format')) {
-            $query->where('format', $request->input('format'));
+        if ($request->format) {
+            $query->where('format', $request->format);
         }
+
+        // 👇 ADD ->withQueryString() HERE
+        $products = $query->paginate(10)->withQueryString();
 
         return Inertia::render('admin/inventory', [
-            'products' => $query->paginate(10)->withQueryString(),
+            'products' => $products,
             'filters' => $request->only(['search', 'format']),
         ]);
     }
@@ -98,7 +93,6 @@ class InventoryController extends Controller
         if ($request->album_selection === 'existing') {
             $albumId = $request->album_id;
         } else {
-            $albumPath = $request->file('new_album_image') ? $request->file('new_album_image')->store('albums', 'public') : null;
             $album = Album::create([
                 'title' => $request->new_album_title,
                 'artist_id' => $artistId,
@@ -111,7 +105,7 @@ class InventoryController extends Controller
         $album->genres()->syncWithoutDetaching($request->genre_ids);
 
         // --- CREATE PRODUCT ---
-        $productPath = $request->file('product_image') ? $request->file('product_image')->store('products', 'public') : null;
+        $productPath = $request->file('product_image') ? $request->file('product_image')->store('products', 'public') : '/storage/products/placeholder.png';
 
         Product::create([
             'album_id' => $albumId,
@@ -163,7 +157,7 @@ class InventoryController extends Controller
             // Removed album_image validation
 
             // --- GENRES ---
-            'genre_ids' => 'required|array|min:1', 
+            'genre_ids' => 'required|array|min:1',
             'genre_ids.*' => 'exists:genres,id',
         ]);
 
@@ -173,7 +167,7 @@ class InventoryController extends Controller
             if ($product->img_path && Storage::disk('public')->exists($product->img_path)) {
                 Storage::disk('public')->delete($product->img_path);
             }
-            
+
             // Store new one
             $path = $request->file('product_image')->store('products', 'public');
             $product->img_path = $path;
