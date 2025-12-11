@@ -47,8 +47,6 @@ export default function CreateProduct({ genres, artists, albums }: PageProps) {
     description: '',
   });
 
-  console.log(albums)
-
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     // Use hardcoded URL as requested

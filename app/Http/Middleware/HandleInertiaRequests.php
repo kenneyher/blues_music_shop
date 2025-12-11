@@ -36,10 +36,17 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $cart = session()->get('cart', []);
+        $cartCount = array_sum(array_column($cart, 'quantity'));
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(), // <--- This passes the logged-in user
+            ],
+            'cart' => [
+                'items' => $cart,
+                'count' => $cartCount
             ],
             // You can also pass flash messages here
             'flash' => [

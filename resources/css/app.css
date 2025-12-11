@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* @custom-variant dark (&:is(.dark *)); */
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -62,31 +62,31 @@
   /* =========================
      PRIMARY (Deep Blue)
      ========================= */
-  --primary: oklch(38% 0.23 262);
+  --primary: oklch(50.955% 0.26187 265.463);
   --primary-foreground: oklch(97% 0.01 255);
 
   /* =========================
      SECONDARY (Indigo)
      ========================= */
-  --secondary: oklch(42% 0.20 268);
+  --secondary: oklch(39.786% 0.26015 270.311);
   --secondary-foreground: oklch(95% 0.01 260);
 
   /* =========================
      TERTIARY (Purple / Soul)
      ========================= */
-  --tertiary: oklch(40% 0.22 282);
+  --tertiary: oklch(47.643% 0.29967 274.951);
   --tertiary-foreground: oklch(96% 0.01 285);
 
   /* =========================
      MUTED / NEUTRAL
      ========================= */
   --muted: oklch(93% 0.006 255);
-  --muted-foreground: oklch(55% 0.015 265);
+  --muted-foreground: oklch(63.568% 0.01153 261.844);
 
   /* =========================
      ACCENT (Vivid Highlight)
      ========================= */
-  --accent: oklch(45% 0.26 276);
+  --accent: oklch(56.032% 0.25157 283.026);
   --accent-foreground: oklch(95% 0.01 280);
 
   /* =========================

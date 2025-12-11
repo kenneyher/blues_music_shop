@@ -2,12 +2,25 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Enums\UserRole;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CartController;
 
 Route::get('/home', [CatalogController::class, 'home'])->name('home');
+Route::get('/product', function () {
+    return Inertia::render('product');
+})->name('product');
+Route::get('/product/{id}', [CatalogController::class, 'show'])->name('catalog.show');
+Route::get('/shop', [CatalogController::class, 'index'])->name('shop.index');
+
+Route::get('/cart/index', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart', [CartController::class, 'store'])->name('cart.add');
+Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+
+Route::get('/', function () {
+    return Inertia::render('welcome');
+})->name('root');
 
 Route::middleware('guest')->group(function () {
     Route::get('/welcome', function () {
@@ -23,9 +36,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
-});
+Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
@@ -51,6 +62,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('/inventory/{id}', [InventoryController::class, 'update'])->name('admin.inventory.update');
     }
 );
+
 //  Group for Customers only
 // Route::middleware(['auth', 'role:customer'])->group(function () {
 //     Route::get('/my-orders', [OrderController::class, 'index']);
