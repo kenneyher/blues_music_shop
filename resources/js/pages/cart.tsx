@@ -6,9 +6,19 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import ShopLayout from '@/layouts/shop-layout';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { CreditCard, Lock } from 'lucide-react'; // Added icons for visual trust
+import { Head, Link, useForm, router } from '@inertiajs/react';
+import { CreditCard, Lock, Trash } from 'lucide-react';
 import { useState } from 'react';
+
+// 1. Define Address Interface matching your DB structure
+interface Address {
+  first_name: string;
+  last_name: string;
+  address_line: string;
+  city: string;
+  country: string;
+  phone?: string;
+}
 
 interface CartItem {
   id: number;
@@ -19,32 +29,47 @@ interface CartItem {
   img: string;
 }
 
-export default function Cart({ cart }: { cart: CartItem[] }) {
-  const [sameAsBilling, setSameAsBilling] = useState<boolean>(true);
+// 2. Accept default addresses as props
+export default function Cart({
+  cart,
+  defaultShipping,
+  defaultBilling,
+}: {
+  cart: CartItem[];
+  defaultShipping?: Address;
+  defaultBilling?: Address;
+}) {
+  // If a default billing address is provided, we default "Same as Billing" to false
+  const [sameAsBilling, setSameAsBilling] = useState<boolean>(!defaultBilling);
 
+  // 3. Initialize form with default values if they exist
   const { data, setData, processing, errors, post } = useForm({
     method: 'POST',
-    first_name: '',
-    last_name: '',
-    address_line: '',
+    first_name: defaultShipping?.first_name || '',
+    last_name: defaultShipping?.last_name || '',
+    address_line: defaultShipping?.address_line || '',
     apartment: '',
-    city: '',
-    country: '',
-    phone: '',
+    city: defaultShipping?.city || '',
+    country: defaultShipping?.country || '',
+    phone: defaultShipping?.phone || '',
+
     payment: 'card',
-    // New Card Fields
     card_number: '',
     card_expiry: '',
     card_cvc: '',
-    using_same_billing: true as boolean,
 
-    payment_first_name: '',
-    payment_last_name: '',
-    payment_address_line: '',
+    // Set logic for billing toggle
+    using_same_billing: !defaultBilling,
+
+    // Pre-fill billing if available
+    payment_first_name: defaultBilling?.first_name || '',
+    payment_last_name: defaultBilling?.last_name || '',
+    payment_address_line: defaultBilling?.address_line || '',
     payment_apartment: '',
-    payment_city: '',
-    payment_country: '',
-    payment_phone: '',
+    payment_city: defaultBilling?.city || '',
+    payment_country: defaultBilling?.country || '',
+    payment_phone: defaultBilling?.phone || '',
+
     shipping_method: 'standard',
   });
 
@@ -202,7 +227,7 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                           <Label htmlFor="express" className="ml-2 font-bold">
                             Express Shipping
                           </Label>
-                          <span className="ml-auto text-sm">$15.00</span>
+                          {/* <span className="ml-auto text-sm">$15.00</span> */}
                         </div>
                         <span className="ml-6 text-sm text-muted-foreground">
                           4-5 Business Days
@@ -218,10 +243,10 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                   <div className="mb-6 flex items-center space-x-2 rounded-md border bg-muted/20 p-4">
                     <Switch
                       id="use-shipping-as-billing"
-                      checked={data.using_same_billing}
+                      checked={sameAsBilling} // Use local state that respects default props
                       onCheckedChange={(checked) => {
-                        setData('using_same_billing', checked as boolean);
-                        setSameAsBilling(Boolean(checked));
+                        setSameAsBilling(checked);
+                        setData('using_same_billing', checked);
                       }}
                     />
                     <Label
@@ -233,8 +258,7 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                   </div>
 
                   {!sameAsBilling && (
-                    <div className="mb-8 animate-in rounded-md border bg-muted/10 p-4 fade-in slide-in-from-top-2">
-                      {/* ... (Your billing inputs here - shortened for brevity) ... */}
+                    <div className="mb-8 flex animate-in flex-col rounded-md border bg-muted/10 p-4 fade-in slide-in-from-top-2">
                       <div className="mb-4 grid grid-cols-2 gap-4">
                         <div>
                           <Input
@@ -265,20 +289,22 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                           )}
                         </div>
                       </div>
-                      <Input
-                        placeholder="Address"
-                        className="mb-4"
-                        value={data.payment_address_line}
-                        onChange={(e) =>
-                          setData('payment_address_line', e.target.value)
-                        }
-                      />
-                      {errors.payment_address_line && (
-                        <p className="mb-4 text-sm text-red-500">
-                          {errors.payment_address_line}
-                        </p>
-                      )}
-                      <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Input
+                          placeholder="Address"
+                          className="mb-4"
+                          value={data.payment_address_line}
+                          onChange={(e) =>
+                            setData('payment_address_line', e.target.value)
+                          }
+                        />
+                        {errors.payment_address_line && (
+                          <p className="mb-4 text-sm text-red-500">
+                            {errors.payment_address_line}
+                          </p>
+                        )}
+                      </div>
+                      <div className="mb-4 grid grid-cols-2 gap-4">
                         <div>
                           <Input
                             placeholder="City"
@@ -321,7 +347,6 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                     <div className="mb-2 flex items-center justify-between">
                       <Label className="font-bold">Credit Card</Label>
                       <div className="flex gap-2">
-                        {/* Icons for Visa/Mastercard */}
                         <div className="h-6 w-10 rounded bg-gray-200"></div>
                         <div className="h-6 w-10 rounded bg-gray-200"></div>
                       </div>
@@ -389,16 +414,11 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
             </section>
 
             {/* RIGHT: Products + Summary (sticky) */}
-
             <section className="bg-muted lg:w-1/2 lg:flex-shrink-0">
               <div className="sticky top-24 p-6 lg:p-8">
-                {/* Cart Items */}
-
                 <div className="space-y-4">
                   {cart.map((item) => (
                     <div key={item.id} className="flex gap-4">
-                      {/* Image with quantity badge */}
-
                       <div className="relative h-16 w-16 flex-shrink-0">
                         <div className="h-full w-full overflow-hidden rounded-md border-3 border-accent shadow-[0_0_0.75rem] shadow-accent">
                           <img
@@ -407,49 +427,41 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                             className="h-full w-full object-contain"
                           />
                         </div>
-
                         <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs text-white shadow-[0_0_0.75rem] shadow-accent">
                           {item.quantity}
                         </span>
                       </div>
-
-                      {/* Info */}
-
                       <div className="flex flex-1 items-start justify-between">
                         <div>
                           <h3 className="text-xl font-bold text-accent">
                             {item.title}
                           </h3>
-
                           <p className="text-sm text-muted-foreground">
                             {item.artist}
                           </p>
                         </div>
-
                         <p className="text-md font-bold">
                           ${(item.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
+                      <Button variant="ghost" size="icon" onClick={() => router.delete(`/cart/${item.id}`)}>
+                        <Trash className="h-4 w-4 text-red-500" />
+                      </Button>
                     </div>
                   ))}
                 </div>
-
-                {/* Summary */}
 
                 <div className="mt-8 space-y-3 border-t border-gray-300 pt-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-2xl font-bold text-foreground">
                       Total
                     </span>
-
                     <span className="text-2xl font-black text-tertiary text-shadow-[0_0_0.75rem] text-shadow-tertiary">
                       ${subtotal.toFixed(2)}
                     </span>
                   </div>
-
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Shipping</span>
-
                     <span className="text-gray-400">
                       Calculated at checkout
                     </span>

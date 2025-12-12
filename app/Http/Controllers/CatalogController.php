@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Genre;
 
 class CatalogController extends Controller
 {
@@ -56,7 +57,7 @@ class CatalogController extends Controller
     // --- NEW: Shop / Catalog Page ---
     public function index(Request $request)
     {
-        $query = Product::with(['album.artist']);
+        $query = Product::with(['album.artist', 'album.genres']); // Load genres for checking
 
         // 1. Search Filter
         if ($request->search) {
@@ -68,11 +69,13 @@ class CatalogController extends Controller
             });
         }
 
-        // 2. Availability Filter
-        if ($request->availability === 'instock') {
-            $query->where('quantity', '>', 0);
-        } elseif ($request->availability === 'outstock') {
-            $query->where('quantity', '=', 0);
+        // 2. Genre Filter (Replaces Availability)
+        // Expecting format: ?genre=Rock,Pop,Jazz
+        if ($request->genre) {
+            $genres = explode(',', $request->genre);
+            $query->whereHas('album.genres', function ($q) use ($genres) {
+                $q->whereIn('name', $genres);
+            });
         }
 
         // 3. Sorting
@@ -94,12 +97,16 @@ class CatalogController extends Controller
         // 4. Pagination
         $products = $query->paginate(12)->withQueryString()->through(fn ($p) => $this->mapProduct($p));
 
-        return Inertia::render('shop', [ // <--- Ensure this matches your file name
+        // 5. Get All Genres for the Filter List
+        // We pluck name to send a simple list: ['Rock', 'Pop', 'Jazz']
+        $allGenres = Genre::orderBy('name')->pluck('name');
+
+        return Inertia::render('shop', [
             'products' => $products,
-            'filters' => (object) $request->only(['search', 'sort', 'availability']),
+            'allGenres' => $allGenres, // <--- Send genres to view
+            'filters' => (object) $request->only(['search', 'sort', 'genre']),
         ]);
     }
-
     // Helper to keep mapping consistent
     private function mapProduct($product)
     {

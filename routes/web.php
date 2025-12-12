@@ -19,6 +19,7 @@ Route::get('/shop', [CatalogController::class, 'index'])->name('shop.index');
 Route::get('/cart/index', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart', [CartController::class, 'store'])->name('cart.add');
 Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -74,6 +75,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/profile', [UserController::class, 'index'])->name('profile');
     Route::post('/profile/address', [UserController::class, 'storeAddress'])->name('profile.address.store');
+    Route::post('/profile/address/default', [UserController::class, 'updateDefaultAddress'])->name('profile.address.updateDefault');
+    Route::post('/profile/address/delete', [UserController::class, 'destroyAddress'])->name('profile.address.delete');
 });
 
 //  Group for Customers only

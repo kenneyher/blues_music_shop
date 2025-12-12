@@ -7,6 +7,7 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use App\Models\Product;
 
 class OrderController extends Controller
 {
@@ -130,6 +131,10 @@ class OrderController extends Controller
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['price'],
                 ]);
+
+                $product = Product::find($item['product_id']);
+                $product->quantity = $product->quantity - $item['quantity'];
+                $product->save();
             }
 
             session()->forget('cart');

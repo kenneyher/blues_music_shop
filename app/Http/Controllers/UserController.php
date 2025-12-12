@@ -52,4 +52,37 @@ class UserController extends Controller
 
         return redirect()->back();
     }
+
+    public function updateDefaultAddress(Request $request)
+    {
+        $validated = $request->validate([
+            'address_id' => 'required|exists:addresses,id',
+            'type' => 'required|in:shipping,billing',
+        ]);
+
+        $user = $request->user();
+
+        // Unset previous default
+        $user->addresses()
+            ->where('type', $validated['type'])
+            ->update(['is_default' => false]);
+
+        // Set new default
+        $user->addresses()
+            ->where('id', $validated['address_id'])
+            ->update(['is_default' => true]);
+
+        return redirect()->back();
+    }
+
+    public function destroyAddress(Request $request)
+    {
+        $user = $request->user();
+
+        $address = $user->addresses()->where('id', $request->id)->firstOrFail();
+
+        $address->delete();
+
+        return redirect()->back();
+    }
 }

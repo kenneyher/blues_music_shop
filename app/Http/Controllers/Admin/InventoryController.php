@@ -18,8 +18,13 @@ class InventoryController extends Controller
         $query = Product::query()->with('album.artist');
 
         if ($request->search) {
-            $query->whereHas('album', function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('album', function ($albumQuery) use ($search) {
+                    $albumQuery->where('title', 'like', "%{$search}%");
+                })->orWhereHas('album.artist', function ($artistQuery) use ($search) {
+                    $artistQuery->where('name', 'like', "%{$search}%");
+                });
             });
         }
 
@@ -27,7 +32,6 @@ class InventoryController extends Controller
             $query->where('format', $request->format);
         }
 
-        // 👇 ADD ->withQueryString() HERE
         $products = $query->paginate(10)->withQueryString();
 
         return Inertia::render('admin/inventory', [
@@ -41,72 +45,79 @@ class InventoryController extends Controller
         return Inertia::render('admin/create', [
             'genres' => Genre::orderBy('name')->get(),
             'artists' => Artist::orderBy('name')->select('id', 'name')->get(),
-            'albums' => Album::with('artist')->orderBy('title')->select('id', 'title', 'artist_id')->get(),
+            'albums' => Album::with('artist')->orderBy('title')->get(['id', 'title', 'artist_id']),
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // ... (Same validation rules as before) ...
-            'artist_selection' => 'required|string',
+            // ARTIST - matches frontend field names
+            'artist_selection' => 'required|in:existing,new',
             'artist_id' => 'nullable|required_if:artist_selection,existing|exists:artists,id',
-            'new_artist_name' => 'nullable|required_if:artist_selection,new|string|max:255',
-            'new_artist_bio' => 'nullable|string',
-            'new_artist_image' => 'nullable|image|max:2048',
+            'artist_name' => 'nullable|required_if:artist_selection,new|string|max:255',
+            'artist_bio' => 'nullable|string',
+            'artist_img' => 'nullable|image|max:2048',
 
-            'album_selection' => 'required|string',
+            // ALBUM - matches frontend field names
+            'album_selection' => 'required|in:existing,new',
             'album_id' => 'nullable|required_if:album_selection,existing|exists:albums,id',
-            'new_album_title' => 'nullable|required_if:album_selection,new|string|max:255',
-            'new_album_release_date' => 'nullable|date',
+            'album_title' => 'nullable|required_if:album_selection,new|string|max:255',
+            'album_release_date' => 'nullable|date',
 
+            // PRODUCT - matches frontend field names
             'genre_ids' => 'required|array|min:1',
             'genre_ids.*' => 'exists:genres,id',
             'format' => 'required|in:Vinyl,CD,Cassette',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:0',
             'sku' => 'required|string|unique:products,sku',
-            'product_image' => 'nullable|image|max:2048',
-
-            // NEW: Description
+            'image' => 'nullable|image|max:2048',
             'description' => 'nullable|string',
         ]);
 
-        // ... (Artist/Album creation logic same as before) ...
-        // [Copy the Artist/Album resolution logic from previous step here]
-
-        // --- REPEATING LOGIC FOR CONTEXT ---
+        // 1. Resolve Artist
         $artistId = null;
         if ($request->artist_selection === 'existing') {
             $artistId = $request->artist_id;
         } else {
-            $artistPath = $request->file('new_artist_image') ? $request->file('new_artist_image')->store('artists', 'public') : null;
+            $artistPath = null;
+            if ($request->hasFile('artist_img')) {
+                $artistPath = $request->file('artist_img')->store('artists', 'public');
+            }
+
             $artist = Artist::create([
-                'name' => $request->new_artist_name,
-                'bio' => $request->new_artist_bio,
+                'name' => $request->artist_name,
+                'bio' => $request->artist_bio,
                 'img_path' => $artistPath,
             ]);
             $artistId = $artist->id;
         }
 
+        // 2. Resolve Album
         $albumId = null;
         if ($request->album_selection === 'existing') {
             $albumId = $request->album_id;
         } else {
             $album = Album::create([
-                'title' => $request->new_album_title,
+                'title' => $request->album_title,
                 'artist_id' => $artistId,
-                'release_date' => $request->new_album_release_date,
+                'release_date' => $request->album_release_date,
             ]);
             $albumId = $album->id;
         }
 
+        // 3. Sync Genres to Album
         $album = Album::find($albumId);
         $album->genres()->syncWithoutDetaching($request->genre_ids);
 
-        // --- CREATE PRODUCT ---
-        $productPath = $request->file('product_image') ? $request->file('product_image')->store('products', 'public') : '/storage/products/placeholder.png';
+        // 4. Handle Product Image
+        $productPath = null;
+        if ($request->hasFile('image')) {
+            $productPath = $request->file('image')->store('products', 'public');
+        }
 
+        // 5. Create Product
         Product::create([
             'album_id' => $albumId,
             'format' => $request->format,
@@ -114,13 +125,12 @@ class InventoryController extends Controller
             'quantity' => $request->quantity,
             'sku' => $request->sku,
             'img_path' => $productPath,
-            'description' => $request->description, // Added
+            'description' => $request->description,
         ]);
 
         return redirect('/admin/inventory')->with('success', 'Product created successfully!');
     }
 
-    // --- NEW: EDIT PAGE ---
     public function edit($id)
     {
         $product = Product::with(['album.artist', 'album.genres'])->findOrFail($id);
@@ -128,68 +138,53 @@ class InventoryController extends Controller
         return Inertia::render('admin/edit', [
             'product' => $product,
             'genres' => Genre::orderBy('name')->get(),
-            // We only really need options if we want to allow changing the album/artist entirely
-            // For this example, let's assume we are mostly editing Product details,
-            // but we'll pass the lists just in case you want to swap the album.
             'artists' => Artist::orderBy('name')->select('id', 'name')->get(),
-            'albums' => Album::with('artist')->orderBy('title')->select('id', 'title', 'artist_id')->get(),
+            'albums' => Album::with('artist')->orderBy('title')->get(['id', 'title', 'artist_id']),
         ]);
     }
 
-    // --- NEW: UPDATE LOGIC ---
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
         $album = $product->album;
 
         $validated = $request->validate([
-            // --- PRODUCT FIELDS ---
             'price' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:0', // Renamed from stock_quantity
+            'quantity' => 'required|integer|min:0',
             'sku' => 'required|string|unique:products,sku,' . $product->id,
             'description' => 'nullable|string',
             'format' => 'required|in:Vinyl,CD,Cassette',
-            'product_image' => 'nullable|image|max:2048', // Image is now here
-
-            // --- ALBUM FIELDS ---
+            'image' => 'nullable|image|max:2048',
             'album_title' => 'required|string|max:255',
-            'release_date' => 'nullable|date',
-            // Removed album_image validation
-
-            // --- GENRES ---
+            'album_release_date' => 'nullable|date',
             'genre_ids' => 'required|array|min:1',
             'genre_ids.*' => 'exists:genres,id',
         ]);
 
-        // 1. Handle PRODUCT Image Upload
-        if ($request->hasFile('product_image')) {
-            // Delete old image if it exists
+        // 1. Handle Product Image
+        if ($request->hasFile('image')) {
             if ($product->img_path && Storage::disk('public')->exists($product->img_path)) {
                 Storage::disk('public')->delete($product->img_path);
             }
-
-            // Store new one
-            $path = $request->file('product_image')->store('products', 'public');
-            $product->img_path = $path;
+            $product->img_path = $request->file('image')->store('products', 'public');
         }
 
-        // 2. Update Album Info (Title & Date only)
+        // 2. Update Album
         $album->update([
             'title' => $validated['album_title'],
-            'release_date' => $validated['release_date'],
+            'release_date' => $validated['album_release_date'],
         ]);
 
         // 3. Sync Genres
         $album->genres()->sync($validated['genre_ids']);
 
-        // 4. Update Product Info
+        // 4. Update Product
         $product->update([
             'price' => $validated['price'],
-            'quantity' => $validated['quantity'], // Renamed
+            'quantity' => $validated['quantity'],
             'sku' => $validated['sku'],
             'description' => $validated['description'],
             'format' => $validated['format'],
-            // img_path is saved above if changed
         ]);
 
         return redirect('/admin/inventory')->with('success', 'Product updated successfully!');

@@ -20,18 +20,9 @@ export default function Header() {
           <Link href="/shop" className="hover:underline">
             Catalog
           </Link>
-          <Link href="#" className="hover:underline">
-            News
-          </Link>
-          <Link href="#" className="hover:underline">
-            Collections
-          </Link>
         </div>
 
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="hover:bg-primary">
-            <Search className="h-5 w-5 cursor-pointer bg-accent" />
-          </Button>
 
           {/* --- AUTH BUTTONS --- */}
           {user ? (

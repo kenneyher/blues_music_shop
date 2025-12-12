@@ -18,7 +18,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ShopLayout from '@/layouts/shop-layout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import {
   MapPin,
   Moon,
@@ -38,6 +38,7 @@ interface Address {
   city: string;
   country: string;
   is_default: boolean;
+  type: 'shipping' | 'billing';
 }
 
 interface User {
@@ -207,7 +208,9 @@ function AddressCard({ address }: { address: Address }) {
         <div className="absolute top-0 right-0 rounded-bl-lg bg-accent px-3 py-1 text-xs font-bold text-white">
           <span>DEFAULT</span>
         </div>
-      ) : <></>}
+      ) : (
+        <></>
+      )}
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-base font-bold">
           <UserIcon className="h-4 w-4 text-muted-foreground" />
@@ -224,11 +227,26 @@ function AddressCard({ address }: { address: Address }) {
         </p>
 
         <div className="flex gap-2 pt-4 opacity-0 transition-opacity group-hover:opacity-100">
-          <Button variant="link" className="h-auto p-0 text-xs text-blue-600">
+          <Button
+            onClick={() =>
+              router.post('/profile/address/default', {
+                address_id: address.id,
+                type: address.type,
+              })
+            }
+            variant="link"
+            className="h-auto p-0 text-xs text-blue-600"
+          >
             Make default
           </Button>
           <span className="text-muted-foreground/30">|</span>
-          <Button variant="link" className="h-auto p-0 text-xs text-red-500">
+          <Button
+            onClick={() =>
+              router.post('/profile/address/delete', { id: address.id })
+            }
+            variant="link"
+            className="h-auto p-0 text-xs text-red-500"
+          >
             Delete
           </Button>
         </div>

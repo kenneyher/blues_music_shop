@@ -25,26 +25,41 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('12345678'),
         ]);
+        User::factory()->create([
+            'first_name' => 'Kenneth',
+            'last_name'=> 'Herrera',
+            'email'=> 'kenneyher@gmail.com',
+            'password'=> Hash::make('12345678'),
+        ]);
 
         $rock = Genre::create(['name' => 'Rock']);
         $blues = Genre::create(['name' => 'Blues']);
         $jazz = Genre::create(['name' => 'Jazz']);
         $pop = Genre::create(['name' => 'Pop']);
 
+        $genres = [
+            'Rock', 'Pop', 'Jazz', 'Hip Hop', 'Electronic',
+            'R&B', 'Country', 'Classical', 'Metal', 'Blues',
+            'Reggae', 'Soul', 'Funk', 'Disco', 'Indie',
+            'Alternative', 'Punk', 'Folk', 'Latin', 'K-Pop'
+        ];
+
+        foreach ($genres as $genre) {
+            // firstOrCreate prevents duplicates if you run the seeder twice
+            Genre::firstOrCreate(['name' => $genre]);
+        }
+
         $beatles = Artist::create([
             'name' => 'The Beatles',
             'bio' => 'An English rock band formed in Liverpool in 1960.',
-            'img_path' => 'artists/thebeatles.jpg',
         ]);
         $mj = Artist::create([
             'name' => 'Michael Jackson',
             'bio' => 'An American singer, songwriter, and dancer, dubbed the "King of Pop".',
-            'img_path' => 'artists/michaeljackson.jpg',
         ]);
         $frank = Artist::create([
             'name' => 'Frank Sinatra',
             'bio' => 'An American singer and actor, one of the best-selling music artists of all time.',
-            'img_path' => 'artists/franksinatra.jpg',
         ]);
 
         $abbey = Album::create([
@@ -72,7 +87,6 @@ class DatabaseSeeder extends Seeder
             'format' => 'Vinyl',
             'price' => 29.99,
             'quantity' => 50,
-            'img_path' => 'albums/abbeyroad.jpg',
             'sku' => 'ABBEY-VINYL-001',
             'description' => 'Classic Abbey Road album on vinyl.',
         ]);
@@ -81,7 +95,6 @@ class DatabaseSeeder extends Seeder
             'format' => 'Vinyl',
             'price' => 25.65,
             'quantity' => 24,
-            'img_path' => 'albums/thriller.jpg',
             'sku' => 'THRILLER-VINYL-001',
             'description' => 'Classic Thriller album on vinyl.',
         ]);
@@ -90,7 +103,6 @@ class DatabaseSeeder extends Seeder
             'format' => 'CD',
             'price' => 12.00,
             'quantity' => 94,
-            'img_path' => 'albums/thriller.jpg',
             'sku' => 'THRILLER-CD-001',
             'description' => 'Classic Thriller album on CD.',
         ]);
@@ -99,7 +111,6 @@ class DatabaseSeeder extends Seeder
             'format' => 'Vinyl',
             'price' => 43.60,
             'quantity' => 48,
-            'img_path' => 'albums/myway.jpg',
             'sku' => 'MYWAY-VINYL-002',
             'description' => 'Studio Album My Way on vinyl.',
         ]);
