@@ -37,8 +37,7 @@ export default function Header() {
           {user ? (
             // IF LOGGED IN: Show Profile & Logout
             <div className="flex items-center gap-2">
-              <Link href="/">
-                {' '}
+              <Link href="/profile">
                 {/* Or /admin/dashboard based on role */}
                 <Button
                   variant="ghost"
