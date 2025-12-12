@@ -11,7 +11,7 @@ class Address extends Model
         'type',
         'first_name',
         'last_name',
-        'adress_line',
+        'address_line',
         'city',
         'country',
         'appartment',

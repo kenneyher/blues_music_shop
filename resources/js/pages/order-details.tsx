@@ -10,10 +10,8 @@ import { ArrowLeft, CheckCircle, Clock, MapPin, Truck } from 'lucide-react';
 // Define types based on your DB structure
 interface OrderItem {
   id: number;
-  product_title: string;
   quantity: number;
   unit_price: number;
-  total_price: number;
   image: string;
 }
 
@@ -92,22 +90,23 @@ export default function OrderDetails({ order }: { order: Order }) {
               <CardContent className="space-y-6">
                 {order.items.map((item) => (
                   <div key={item.id} className="flex items-center gap-4">
-                    <div className="h-full w-full overflow-hidden rounded-md border-3 border-accent shadow-[0_0_0.75rem] shadow-accent">
+                    <div className="h-16 w-16 overflow-hidden rounded-md border-3 border-accent shadow-[0_0_0.75rem] shadow-accent">
                       <img
                         src={item.image}
-                        alt={item.product_title}
+                        alt={item.product.album.artist}
                         className="h-full w-full object-contain"
                       />
                     </div>
+
                     <div className="flex-1">
-                      <h4 className="font-bold">{item.product_title}</h4>
+                      <h4 className="font-bold">{item.product.album.title}</h4>
                       <p className="text-sm text-gray-500">
                         Qty: {item.quantity} × $
                         {Number(item.unit_price).toFixed(2)}
                       </p>
                     </div>
                     <div className="text-right font-bold">
-                      ${Number(item.total_price).toFixed(2)}
+                      ${Number(item.unit_price * item.quantity).toFixed(2)}
                     </div>
                   </div>
                 ))}
@@ -137,16 +136,10 @@ export default function OrderDetails({ order }: { order: Order }) {
                     ${Number(order.shipping_cost).toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tax</span>
-                  <span className="font-medium">
-                    ${Number(order.tax).toFixed(2)}
-                  </span>
-                </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span>${Number(order.total_price).toFixed(2)}</span>
+                  <span>${Number(order.subtotal) + Number(order.shipping_cost)}</span>
                 </div>
               </CardContent>
             </Card>

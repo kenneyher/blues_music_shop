@@ -217,7 +217,7 @@ export default function Shop({
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src =
-                              '/storage/products/placeholder.jpg';
+                              '/storage/products/placeholder.png';
                           }}
                         />
                       </div>

@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\UserController;
 
 Route::get('/home', [CatalogController::class, 'home'])->name('home');
 Route::get('/product', function () {
@@ -71,6 +72,8 @@ Route::middleware('auth')->group(function () {
     
     // View the confirmation / receipt
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/profile', [UserController::class, 'index'])->name('profile');
+    Route::post('/profile/address', [UserController::class, 'storeAddress'])->name('profile.address.store');
 });
 
 //  Group for Customers only

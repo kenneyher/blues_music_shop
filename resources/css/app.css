@@ -131,38 +131,88 @@
 
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.488 0.243 264.376);
-  --primary-foreground: oklch(0.97 0.014 254.604);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(57.632% 0.23416 275.658);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.623 0.214 259.815);
-  --sidebar-primary-foreground: oklch(0.97 0.014 254.604);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.439 0 0);
+  --radius: 0.65rem;
+
+  /* =========================
+     BASE / BACKGROUND
+     ========================= */
+  --background: oklch(18% 0.03 260);        /* deep near-black with slight blue */
+  --foreground: oklch(96% 0.02 260);        /* bright cool white */
+
+  --card: oklch(22% 0.035 258);
+  --card-foreground: oklch(95% 0.02 260);
+
+  --popover: oklch(20% 0.035 260);
+  --popover-foreground: oklch(96% 0.02 260);
+
+  /* =========================
+     PRIMARY (Electric Blue)
+     ========================= */
+  --primary: oklch(62.355% 0.20389 259.125);           /* neon blue */
+  --primary-foreground: oklch(100% 0.00011 271.152);
+
+  /* =========================
+     SECONDARY (Vivid Indigo)
+     ========================= */
+  --secondary: oklch(53.755% 0.25624 267.302);         /* bright indigo */
+  --secondary-foreground: oklch(100% 0.00011 271.152);
+
+  /* =========================
+     TERTIARY (Neon Violet)
+     ========================= */
+  --tertiary: oklch(70.817% 0.17893 299.291);          /* luminous violet */
+  --tertiary-foreground: oklch(14% 0.02 285);
+
+  /* =========================
+     MUTED / NEUTRAL
+     ========================= */
+  --muted: oklch(32% 0.03 260);
+  --muted-foreground: oklch(78% 0.03 260);
+
+  /* =========================
+     ACCENT (Lavender Glow)
+     ========================= */
+  --accent: oklch(55.349% 0.24608 268.712);            /* neon lavender */
+  --accent-foreground: oklch(100% 0.00011 271.152);
+
+  /* =========================
+     DESTRUCTIVE
+     ========================= */
+  --destructive: oklch(62% 0.25 28);        /* stays warm for contrast */
+
+  /* =========================
+     BORDERS / INPUT / RING
+     ========================= */
+  --border: oklch(30% 0.03 260);
+  --input: oklch(32% 0.03 260);
+  --ring: oklch(70% 0.27 265);              /* bright violet-blue */
+
+  /* =========================
+     DATA VISUALIZATION
+     Blue → Indigo → Violet → Lavender
+     ========================= */
+  --chart-1: oklch(72% 0.24 245);           /* bright neon blue */
+  --chart-2: oklch(67% 0.26 255);           /* saturated blue-violet */
+  --chart-3: oklch(64% 0.27 265);           /* neon indigo-violet */
+  --chart-4: oklch(68% 0.24 280);           /* vivid violet */
+  --chart-5: oklch(74% 0.23 295);           /* glowing lavender */
+
+  /* =========================
+     SIDEBAR
+     ========================= */
+  --sidebar: oklch(19% 0.03 260);
+  --sidebar-foreground: oklch(95% 0.02 260);
+
+  --sidebar-primary: oklch(67% 0.25 260);   /* neon blue-violet */
+  --sidebar-primary-foreground: oklch(15% 0.02 260);
+
+  --sidebar-accent: oklch(74% 0.22 290);    /* glowing lavender */
+  --sidebar-accent-foreground: oklch(18% 0.02 285);
+
+  --sidebar-border: oklch(28% 0.03 260);
+  --sidebar-ring: oklch(72% 0.25 270);
 }
+
 
 
 

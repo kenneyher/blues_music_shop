@@ -19,11 +19,13 @@ return new class extends Migration
             // Status Management
             $table->enum('status', array_column(OrderStatus::cases(), 'value'))->default(OrderStatus::PENDING->value);
             $table->string('payment_method')->default('credit_card');
-
+            
             // Financials
             $table->decimal('subtotal', 10, 2);
             $table->decimal('shipping_cost', 10, 2)->default(0);
-
+            $table->string('shipping_method')->default('standard');
+            $table->string('card_last_four', 4)->nullable();
+            
             // Address Snapshots
             $table->json('shipping_address');
             $table->json('billing_address');
