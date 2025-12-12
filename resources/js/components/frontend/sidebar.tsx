@@ -1,7 +1,7 @@
 'use client';
 
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, Disc2Icon, LogOut } from 'lucide-react';
+import { LayoutDashboard, Disc2Icon, TicketCheck, LogOut } from 'lucide-react';
 import { PageProps } from '@/types'; 
 
 export default function Sidebar() {
@@ -22,6 +22,11 @@ export default function Sidebar() {
       label: 'Inventory',
       href: '/admin/inventory',
       icon: Disc2Icon,
+    },
+    {
+      label: 'Orders',
+      href: '/admin/orders',
+      icon: TicketCheck,
     },
   ];
 

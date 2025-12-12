@@ -8,6 +8,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/home', [CatalogController::class, 'home'])->name('home');
 Route::get('/product', function () {
@@ -55,9 +56,7 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::post('/inventory', [InventoryController::class, 'store'])->name('admin.inventory.store');
     
-        Route::get('/dashboard', function () {
-            return Inertia::render('admin/dashboard');
-        })->name('admin.dashboard');
+                Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     
     // NEW ROUTES
@@ -77,6 +76,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/address', [UserController::class, 'storeAddress'])->name('profile.address.store');
     Route::post('/profile/address/default', [UserController::class, 'updateDefaultAddress'])->name('profile.address.updateDefault');
     Route::post('/profile/address/delete', [UserController::class, 'destroyAddress'])->name('profile.address.delete');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/orders', [OrderController::class, 'adminIndex'])->name('admin.orders.index');
+    Route::get('/orders/{id}', [OrderController::class, 'adminShow'])->name('admin.orders.show');
+    Route::patch('/orders/{id}', [OrderController::class, 'adminUpdate'])->name('admin.orders.update');
 });
 
 //  Group for Customers only

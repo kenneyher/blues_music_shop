@@ -1,46 +1,40 @@
 # Blues Music Shop Documentation
 
-## User Manual
-
-### Overview
+## Overview
 Blues Music Shop is a Laravel 12 + Inertia React storefront for browsing albums, adding items to a cart, checking out, and administering inventory.
 
-### Access
-- Default URL: `http://localhost:8000` (match your `APP_URL`).
-- Sample users from seed data:
-  - Admin: `admin@admin.com` / `12345678`
-  - Customer: `kenneyher@gmail.com` / `12345678`
-- Authentication flows: register at `/register`, login at `/login`, logout via header/menu action.
+## Prerequisites and Setup
+- PHP 8.2+ with Composer, Node.js 20+, MySQL (or SQLite for local use).
+- Copy `.env.example` to `.env`, set `APP_URL` and database settings, then run:
+  - `php artisan key:generate`
+  - `php artisan migrate --seed`
+- Start locally: `composer dev` (serves app, queue listener, log viewer, Vite) or `php artisan serve` + `npm run dev` in separate shells.
 
-### Catalog and Product Pages
-- Browse the catalog at `/shop` or `/home`; product detail pages are at `/product/{id}`.
-- Use product cards to open detail pages and add items to the cart (select format/quantity when prompted).
+## Roles and Access
+- Guest: can browse catalog and view products.
+- Customer (authenticated): can manage cart, checkout, view orders, manage addresses.
+- Admin (role: admin): can access admin dashboard and inventory CRUD.
+- Seeded accounts: admin `admin@admin.com` / `12345678`; customer `kenneyher@gmail.com` / `12345678`.
+
+## User Manual
+
+### Browsing and Product Details
+- Visit `/shop` or `/home` to browse. Open any product to view album info, price, available formats, and add-to-cart options.
 
 ### Cart
-- Open the cart at `/cart/index`.
-- Add items from product pages; quantities can be increased or decreased; remove items with the delete action.
-- Line totals and cart subtotal update as quantities change.
+- Access `/cart/index`. Quantities can be increased/decreased; items can be removed. Subtotals update immediately.
 
 ### Checkout and Orders
-- Checkout endpoint: POST `/orders` (UI flow starts from the cart when authenticated).
-- You must be logged in to place an order. The app uses stored addresses for shipping/billing.
-- After placing an order, you can view your orders at `/my-orders` and each order at `/orders/{id}`.
+- You must be logged in. From the cart, proceed to checkout (POST `/orders`).
+- Orders use saved addresses. After checkout, view history at `/my-orders` and details at `/orders/{id}`.
 
 ### Profile and Addresses
-- Profile page: `/profile` (auth required).
-- Add or update address via `/profile/address` endpoints (UI buttons in the profile page).
-- Set a default address or delete an address from the profile.
+- Profile: `/profile` (auth required). Add/update/delete addresses and set one as default for checkout.
 
-### Admin Inventory (role: admin)
+### Admin Inventory
 - Admin dashboard: `/admin/dashboard`.
-- Inventory list: `/admin/inventory`; create: `/admin/inventory/create`; edit: `/admin/inventory/{id}/edit`.
-- Admins can create, update, or delete products, including album links, format, price, quantity, and SKU.
-
-### Running the App Locally (summary)
-- Install dependencies: `composer install` and `npm install`.
-- Configure `.env`, then generate key: `php artisan key:generate`.
-- Migrate and seed: `php artisan migrate --seed`.
-- Start dev stack: `composer dev` (serves app, queue listener, log viewer, and Vite) or run `php artisan serve` and `npm run dev` separately.
+- Inventory: `/admin/inventory`; create `/admin/inventory/create`; edit `/admin/inventory/{id}/edit`.
+- Admins can manage products (album link, format, price, quantity, SKU).
 
 ## Test Cases and Results
 
@@ -60,11 +54,11 @@ Blues Music Shop is a Laravel 12 + Inertia React storefront for browsing albums,
 | TC-11 | Admin edits product | Login as admin; edit existing product; change price/qty | Inventory reflects updates; catalog shows new values | Existing product | Not run (doc-only) |
 
 ### Automated Tests
-- PHP tests: `composer test` (runs `php artisan test` with Pest/PHPUnit).
+- Run backend tests: `composer test` (wraps `php artisan test` with Pest/PHPUnit).
 - Frontend checks: `npm run lint`, `npm run types`, `npm run format:check`.
-- Current run status: not executed in this environment; run the commands above after configuring `.env` and database.
+- Last run status: not executed in this document; run locally after configuring `.env` and the database.
 
 ### Data and Environment Notes
-- Seed accounts and products are created by `php artisan migrate --seed` (see `database/seeders/DatabaseSeeder.php`).
-- Default DB is MySQL in production; `.env.example` ships with SQLite for local use—set `DB_CONNECTION` accordingly.
-- Sessions, cache, and queues default to database drivers; ensure migrations are applied before testing.
+- Seed data created by `php artisan migrate --seed` (see `database/seeders/DatabaseSeeder.php`).
+- `.env.example` defaults to SQLite; switch to MySQL by setting `DB_CONNECTION=mysql` and credentials.
+- Sessions, cache, and queues use database drivers; ensure migrations run before testing.
