@@ -111,7 +111,6 @@ class CatalogController extends Controller
             'img' => $product->img_path
                 ? '/storage/'.$product->img_path
                 : ($product->album->img_path ? '/storage/'.$product->album->img_path : '/storage/products/placeholder.png'),
-            // Logic for "Sale" badge (optional, assume false for now)
             'isSale' => false,
         ];
     }

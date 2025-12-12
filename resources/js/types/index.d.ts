@@ -23,6 +23,7 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
     }
     cart: {
         count: number;
+        items: Array<any>;
     }
     flash: {
         success?: string;

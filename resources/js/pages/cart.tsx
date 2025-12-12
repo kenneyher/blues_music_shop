@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import ShopLayout from '@/layouts/shop-layout';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 
 interface CartItem {
   id: number;
@@ -19,21 +19,27 @@ interface CartItem {
 export default function Cart({ cart }: { cart: CartItem[] }) {
   const { data, setData, processing, errors, post } = useForm({
     method: 'POST',
-    firstName: '',
-    lastName: '',
-    address: '',
+    first_name: '',
+    last_name: '',
+    address_line: '',
     apartment: '',
     city: '',
+    country: '',
     phone: '',
+    payment: 'standard',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form Data:', data);
     console.log('Form errors:', errors);
-    post('/checkout');
-    // router.post('/checkout', data);
+    post('/orders');
   };
+
+  const subtotal = cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0,
+  );
 
   return (
     <ShopLayout>
@@ -53,7 +59,7 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
         ) : (
           <div className="flex min-h-screen flex-col lg:flex-row">
             {/* LEFT: Form Section (scrollable) */}
-            <section className="flex-1  max-w-1/2 overflow-y-auto border-muted-foreground/50 lg:border-r-2">
+            <section className="max-w-1/2 flex-1 overflow-y-auto border-muted-foreground/50 lg:border-r-2">
               <div className="mx-auto max-w-lg p-6 lg:p-12">
                 <h1 className="mb-8 text-4xl font-bold tracking-tight">
                   Shopping Bag ({cart.length})
@@ -61,53 +67,49 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
 
                 <form onSubmit={handleSubmit}>
                   <h3 className="mb-4 text-lg font-semibold">Shipping</h3>
-                  <div className="mb-4 flex flex-row gap-4">
+                  <div className="flex flex-row gap-4">
                     <div className="flex w-1/2 flex-col">
                       <Input
                         type="text"
-                        value={data.firstName}
+                        value={data.first_name}
                         placeholder="First Name"
                         className="w-full"
-                        onChange={(e) =>
-                          setData('firstName', e.target.value)
-                        }
+                        onChange={(e) => setData('first_name', e.target.value)}
                       />
-                      {errors.firstName && (
-                        <span className="text-sm text-red-500">
-                          {errors.firstName}
-                        </span>
+                      {errors.first_name && (
+                        <p className="text-sm text-red-500">
+                          {errors.first_name}
+                        </p>
                       )}
                     </div>
-                    <div className="flex w-1/2 flex-col">
+                    <div className="mb-4 flex w-1/2 flex-col">
                       <Input
                         type="text"
                         placeholder="Last Name"
                         className="w-full"
-                        value={data.lastName}
-                        onChange={(e) =>
-                          setData('lastName', e.target.value)
-                        }
+                        value={data.last_name}
+                        onChange={(e) => setData('last_name', e.target.value)}
                       />
-                      {errors.lastName && (
-                        <span className="text-sm text-red-500">
-                          {errors.lastName}
-                        </span>
+                      {errors.last_name && (
+                        <p className="text-sm text-red-500">
+                          {errors.last_name}
+                        </p>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex-col">
+                  <div className="mb-4 flex-col">
                     <Input
                       type="text"
                       placeholder="Address Line"
-                      className="mb-4 w-full"
-                      value={data.address}
-                      onChange={(e) => setData('address', e.target.value)}
+                      className="w-full"
+                      value={data.address_line}
+                      onChange={(e) => setData('address_line', e.target.value)}
                     />
-                    {errors.address && (
-                      <span className="text-sm text-red-500">
-                        {errors.address}
-                      </span>
+                    {errors.address_line && (
+                      <p className="mb-4 text-sm text-red-500">
+                        {errors.address_line}
+                      </p>
                     )}
                   </div>
                   <Input
@@ -117,40 +119,48 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                     value={data.apartment}
                     onChange={(e) => setData('apartment', e.target.value)}
                   />
-                  <div className="flex-col">
-                    <Input
-                      type="text"
-                      placeholder="City"
-                      className="mb-4 w-full"
-                      value={data.city}
-                      onChange={(e) => setData('city', e.target.value)}
-                    />
-                    {errors.city && (
-                      <span className="text-sm text-red-500">
-                        {errors.city}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex-col">
-                    <Input
-                      type="text"
-                      placeholder="Phone Number"
-                      className="mb-4 w-full"
-                      value={data.phone}
-                      onChange={(e) => setData('phone', e.target.value)}
-                    />
-                    {errors.phone && (
-                      <span className="text-sm text-red-500">
-                        {errors.phone}
-                      </span>
-                    )}
-                  </div>
+                  <Input
+                    type="text"
+                    placeholder="Country"
+                    className="mb-4 w-full"
+                    value={data.country}
+                    onChange={(e) => setData('country', e.target.value)}
+                  />
+                  {errors.country && (
+                    <span className="mb-4 text-sm text-red-500">
+                      {errors.country}
+                    </span>
+                  )}
+                  <Input
+                    type="text"
+                    placeholder="City"
+                    className="mb-4 w-full"
+                    value={data.city}
+                    onChange={(e) => setData('city', e.target.value)}
+                  />
+                  {errors.city && (
+                    <span className="mb-4 text-sm text-red-500">
+                      {errors.city}
+                    </span>
+                  )}
+                  <Input
+                    type="text"
+                    placeholder="Phone Number"
+                    className="mb-4 w-full"
+                    value={data.phone}
+                    onChange={(e) => setData('phone', e.target.value)}
+                  />
+                  {errors.phone && (
+                    <span className="mb-4 text-sm text-red-500">
+                      {errors.phone}
+                    </span>
+                  )}
 
                   <RadioGroup
                     defaultValue="standard"
                     className="flex-col gap-0"
-                    value={data.method}
-                    onValueChange={(value) => setData('method', value)}
+                    value={data.payment}
+                    onValueChange={(value) => setData('payment', value)}
                   >
                     <div className="flex flex-col rounded-t-md border-2 border-muted/50 p-4">
                       <div className="flex items-center">
@@ -207,7 +217,7 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                             className="h-full w-full object-contain"
                           />
                         </div>
-                        <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-accent shadow-[0_0_0.75rem] shadow-accent text-xs text-white">
+                        <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs text-white shadow-[0_0_0.75rem] shadow-accent">
                           {item.quantity}
                         </span>
                       </div>
@@ -215,10 +225,14 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                       {/* Info */}
                       <div className="flex flex-1 items-start justify-between">
                         <div>
-                          <h3 className="text-xl font-bold text-accent">{item.title}</h3>
-                          <p className="text-sm text-muted-foreground">{item.artist}</p>
+                          <h3 className="text-xl font-bold text-accent">
+                            {item.title}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {item.artist}
+                          </p>
                         </div>
-                        <p className="text-sm font-bold">
+                        <p className="text-md font-bold">
                           ${(item.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
@@ -229,18 +243,18 @@ export default function Cart({ cart }: { cart: CartItem[] }) {
                 {/* Summary */}
                 <div className="mt-8 space-y-3 border-t border-gray-300 pt-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
-                    {/* <span className="font-medium">${subtotal.toFixed(2)}</span> */}
+                    <span className="text-2xl font-bold text-foreground">
+                      Total
+                    </span>
+                    <span className="text-2xl font-black text-tertiary text-shadow-[0_0_0.75rem] text-shadow-tertiary">
+                      ${subtotal.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Shipping</span>
                     <span className="text-gray-400">
                       Calculated at checkout
                     </span>
-                  </div>
-                  <div className="flex justify-between border-t border-gray-300 pt-3 text-lg font-bold">
-                    <span>Total</span>
-                    {/* <span>${subtotal.toFixed(2)}</span> */}
                   </div>
                 </div>
               </div>

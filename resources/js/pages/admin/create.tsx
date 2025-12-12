@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox'; 
 import { ArrowLeft, Save, PlusCircle, Music } from 'lucide-react';
 
 interface Option {
@@ -49,11 +48,9 @@ export default function CreateProduct({ genres, artists, albums }: PageProps) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Use hardcoded URL as requested
     post('/admin/inventory');
   };
 
-  // Helper for Multi-Select Genres
   const toggleGenre = (id: number) => {
     const current = data.genre_ids;
     if (current.includes(id)) {

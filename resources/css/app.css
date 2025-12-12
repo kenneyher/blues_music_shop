@@ -21,6 +21,8 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-foreground: var(--tertiary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
@@ -74,7 +76,7 @@
   /* =========================
      TERTIARY (Purple / Soul)
      ========================= */
-  --tertiary: oklch(47.643% 0.29967 274.951);
+  --tertiary: oklch(60.918% 0.2109 265.586);
   --tertiary-foreground: oklch(96% 0.01 285);
 
   /* =========================

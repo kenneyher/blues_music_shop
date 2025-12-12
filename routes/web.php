@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 
 Route::get('/home', [CatalogController::class, 'home'])->name('home');
 Route::get('/product', function () {
@@ -62,6 +63,15 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('/inventory/{id}', [InventoryController::class, 'update'])->name('admin.inventory.update');
     }
 );
+
+Route::middleware('auth')->group(function () {
+    // Process the checkout
+    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/my-orders', [OrderController::class, 'index'])->name('orders.index');
+    
+    // View the confirmation / receipt
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+});
 
 //  Group for Customers only
 // Route::middleware(['auth', 'role:customer'])->group(function () {
